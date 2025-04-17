@@ -1,0 +1,138 @@
+% Lorenz System Numerical Solution and Visualization
+
+% Parameters
+sigma = 10;   % Prandtl number
+rho = 28;     % Rayleigh number
+beta = 8/3;   % Geometric factor
+
+% Time span for the simulation
+tSpan = [0, 50];  % Time range (start, end)
+dt = 0.01;        % Time step
+t = tSpan(1):dt:tSpan(2);  % Time vector
+
+% Initial conditions
+x0 = 1.0;  % Initial value for x
+y0 = 1.0;  % Initial value for y
+z0 = 1.0;  % Initial value for z
+initial_conditions = [x0, y0, z0];
+
+% Function defining the Lorenz system
+lorenz = @(t, state) [
+    sigma * (state(2) - state(1));             % dx/dt
+    state(1) * (rho - state(3)) - state(2);    % dy/dt
+    state(1) * state(2) - beta * state(3)      % dz/dt
+];
+
+% Solving the system using ode45 (a Runge-Kutta method)
+[tSol, stateSol] = ode45(lorenz, t, initial_conditions);
+
+% Extract solutions
+x = stateSol(:, 1);  % x values
+y = stateSol(:, 2);  % y values
+z = stateSol(:, 3);  % z values
+
+% Visualization of the Lorenz Attractor
+figure('Color', 'white');  % Create a new figure
+plot3(x, y, z, 'LineWidth', 0.5);
+grid on;
+xlabel('X'); ylabel('Y'); zlabel('Z');
+title('Lorenz Attractor');
+view(30, 30);  % Set the viewing angle
+
+%%
+% Lorenz System Animated Simulation
+
+% Parameters
+sigma = 10;   % Prandtl number
+rho = 28;     % Rayleigh number
+beta = 8/3;   % Geometric factor
+
+% Time span for the simulation
+tSpan = [0, 50];  % Time range (start, end)
+dt = 0.01;        % Time step
+t = tSpan(1):dt:tSpan(2);  % Time vector
+
+% Initial conditions
+x0 = 1.0;  % Initial value for x
+y0 = 1.0;  % Initial value for y
+z0 = 1.0;  % Initial value for z
+initial_conditions = [x0, y0, z0];
+
+% Function defining the Lorenz system
+lorenz = @(t, state) [
+    sigma * (state(2) - state(1));             % dx/dt
+    state(1) * (rho - state(3)) - state(2);    % dy/dt
+    state(1) * state(2) - beta * state(3)      % dz/dt
+];
+
+% Solving the system using ode45
+[tSol, stateSol] = ode45(lorenz, t, initial_conditions);
+
+% Extract solutions
+x = stateSol(:, 1);  % x values
+y = stateSol(:, 2);  % y values
+z = stateSol(:, 3);  % z values
+
+% Animation setup
+figure('Color', 'white');  % Create figure
+ax = axes;                 % Set up the axes
+hold on;                   % Hold the plot for dynamic updates
+grid on;
+
+% Set axis labels and limits
+xlabel('X'); ylabel('Y'); zlabel('Z');
+title('Lorenz Attractor Animation');
+axis([-20 20 -30 30 0 50]);  % Adjust axis limits to fit the attractor
+view(30, 30);  % Set the viewing angle
+
+% Initialize the animated line
+h = animatedline('Color', 'b', 'LineWidth', 1.5);
+
+% Loop through the points and update the plot
+for k = 1:1:length(tSol)
+    % Add the new point to the animated line
+    addpoints(h, x(k), y(k), z(k));
+    
+    % Update the view (optional, for a rotating effect)
+    view(30 + k/100, 30);
+    
+    % Pause to create the animation effect
+    pause(0.00001);
+end
+
+% Keep the final view
+hold off;
+%%
+% paper implemenation
+% Parameters
+alpha = 3.0; beta = 26.5; gamma = 0.74; delta = 0.5;
+
+% Define the system of equations
+dxdt = @(t, x) [
+    0;                            % x1 is constant
+    alpha * (x(2) - x(1));        % x2 dynamics (healthy cells)
+    x(1) * (beta - x(3)) - x(2) + gamma; % x3 dynamics (malignant cells)
+    delta * x(1) * x(2) - x(3)    % x4 dynamics (drug suppression)
+];
+
+% Time span and initial conditions
+tSpan = [0 50]; % Time range
+x0 = [1; 10; 5; 0]; % Initial conditions: [x1, x2, x3, x4]
+
+% Solve the system using ode45
+[tSol, xSol] = ode45(dxdt, tSpan, x0);
+
+% Plot results
+figure;
+subplot(2,2,1); plot(tSol, xSol(:,1)); title('x1: Cancer Cell Density (Constant)');
+xlabel('Time'); ylabel('Density');
+
+subplot(2,2,2); plot(tSol, xSol(:,2)); title('x2: Healthy Host Cells');
+xlabel('Time'); ylabel('Cells');
+
+subplot(2,2,3); plot(tSol, xSol(:,3)); title('x3: Malignant Cancer Cells');
+xlabel('Time'); ylabel('Cells');
+
+subplot(2,2,4); plot(tSol, xSol(:,4)); title('x4: Drug Suppressed Cells');
+xlabel('Time'); ylabel('Cells');
+7
